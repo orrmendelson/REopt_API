@@ -45,7 +45,7 @@ from reo.src.load_profile_chiller_thermal import LoadProfileChillerThermal
 from reo.src.profiler import Profiler
 from reo.src.site import Site
 from reo.src.storage import Storage, HotTES, ColdTES
-from reo.src.techs import PV, Util, Wind, Generator, CHP, Boiler, ElectricChiller, AbsorptionChiller, NewBoiler, SteamTurbine
+from reo.src.techs import PV, Util, Wind, Generator, CHP, Boiler, ElectricChiller, AbsorptionChiller, NewBoiler, SteamTurbine, MassProducer
 from reo.src import ghp
 from celery import shared_task, Task
 from reo.models import ModelManager
@@ -236,7 +236,7 @@ def setup_scenario(self, run_uuid, data, raw_post):
             year=lp.year,
             **inputs_dict['Site']['LoadProfileBoilerFuel']
             )
-        
+
         lpbf_dhw = LoadProfileBoilerFuel(load_type="DHW",
             dfm=dfm,
             time_steps_per_hour=inputs_dict['time_steps_per_hour'],
@@ -257,11 +257,11 @@ def setup_scenario(self, run_uuid, data, raw_post):
         # Load Profile Chiller Electric        
         lpct = LoadProfileChillerThermal(load_type="Cooling",
                                             dfm=dfm,
-                                            total_electric_load_list=lp.unmodified_load_list, 
+                                            total_electric_load_list=lp.unmodified_load_list,
                                             time_steps_per_hour=inputs_dict['time_steps_per_hour'],
                                             latitude=inputs_dict['Site']['latitude'], 
                                             longitude=inputs_dict['Site']['longitude'], 
-                                            nearest_city=lp.nearest_city or lpbf_space.nearest_city, 
+                                            nearest_city=lp.nearest_city or lpbf_space.nearest_city,
                                             year=lp.year, max_thermal_factor_on_peak_load=
                                             inputs_dict['Site']['ElectricChiller']['max_thermal_factor_on_peak_load'],
                                             **inputs_dict['Site']['LoadProfileChillerThermal'])
@@ -413,7 +413,7 @@ def setup_scenario(self, run_uuid, data, raw_post):
                 ghp_option_list.append(ghp.GHPGHX(dfm=dfm,
                                                     response=ghpModelManager.make_response(ghp_uuid),
                                                     **inputs_dict["Site"]["GHP"]))
-        
+
         util = Util(dfm=dfm,
                     outage_start_time_step=inputs_dict['Site']['LoadProfile'].get("outage_start_time_step"),
                     outage_end_time_step=inputs_dict['Site']['LoadProfile'].get("outage_end_time_step"),
@@ -427,6 +427,22 @@ def setup_scenario(self, run_uuid, data, raw_post):
         
         if inputs_dict["Site"]["SteamTurbine"]["max_kw"] > 0:
             steamturbine = SteamTurbine(dfm=dfm, **inputs_dict['Site']['SteamTurbine'])
+            # Any parameters processed and updated?
+            tmp = dict()
+            # Assign tmp["param"] = steamturbine.xyx
+            ModelManager.updateModel('SteamTurbineModel', tmp, run_uuid)
+
+        if inputs_dict["Site"]["MassProducer"]["max_mass_per_time"] > 0:
+            massproducer = MassProducer(dfm=dfm, **inputs_dict['Site']['MassProducer'])
+            # Any parameters processed and updated?
+            tmp = dict()
+            # Assign tmp["param"] = massproducer.xyx
+            ModelManager.updateModel('MassProducerModel', tmp, run_uuid)
+
+        # Assign decomposition subproblem optimization parameters - only used if decomposition is selected
+        dfm.optimality_tolerance_decomp_subproblem = inputs_dict['optimality_tolerance_decomp_subproblem']
+        dfm.timeout_decomp_subproblem_seconds = inputs_dict['timeout_decomp_subproblem_seconds']
+        dfm.add_soc_incentive = inputs_dict['add_soc_incentive']
 
         dfm.finalize()
         dfm_dict = vars(dfm)  # serialize for celery
@@ -435,7 +451,7 @@ def setup_scenario(self, run_uuid, data, raw_post):
 
         for k in ['storage', 'hot_tes', 'cold_tes', 'site', 'elec_tariff', 'fuel_tariff', 'pvs', 'pvnms',
                 'load', 'util', 'heating_load', 'cooling_load', 'newboiler', 'steamturbine', 'ghp_option_list',
-                'heating_load_space_heating', 'heating_load_dhw'] + dfm.available_techs:
+                'heating_load_space_heating', 'heating_load_dhw', 'massproducer'] + dfm.available_techs:
             if dfm_dict.get(k) is not None:
                 del dfm_dict[k]
 
@@ -476,7 +492,7 @@ def setup_scenario(self, run_uuid, data, raw_post):
                                         "attempting to pull solar resource data from either dataset.")
                         raise PVWattsDownloadError(message=message, task=self.name, run_uuid=run_uuid, user_uuid=self.data['inputs']['Scenario'].get('user_uuid'), traceback=e.args[0])
                     if e.args[0].startswith("Invalid cost curve"):
-                        raise RequestError(message=e.args[0], task='data_manager.py', run_uuid=run_uuid, user_uuid=self.data['inputs']['Scenario'].get('user_uuid')) 
+                        raise RequestError(message=e.args[0], task='data_manager.py', run_uuid=run_uuid, user_uuid=self.data['inputs']['Scenario'].get('user_uuid'))
 
 
         exc_type, exc_value, exc_traceback = sys.exc_info()
