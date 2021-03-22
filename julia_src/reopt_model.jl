@@ -544,10 +544,14 @@ function add_mass_producer_constraints(m, p)
         end
     end
     if "ColdTES" in p.Storage
-        fix(m[:dvStorageToMassProducer]["ColdTES",ts], 0.0, force=true)
+        for ts in p.TimeStep
+            fix(m[:dvStorageToMassProducer]["ColdTES",ts], 0.0, force=true)
+        end
     end
-    if "HotTES" in p.Storage && HotTESCanSupplyMassProducer == 0
-        fix(m[:dvStorageToMassProducer]["HotTES",ts], 0.0, force=true)
+    if "HotTES" in p.Storage && p.HotTESCanSupplyMassProducer == 0
+        for ts in p.TimeStep
+            fix(m[:dvStorageToMassProducer]["HotTES",ts], 0.0, force=true)
+        end
     end
     # Add MassProducer constraints if considered
 	if !isempty(p.MassProducerTechs)
@@ -799,7 +803,7 @@ function add_tech_size_constraints(m, p)
 
 	##Constraint (7e): Derate factor limits production variable (separate from ProductionFactor)
     for ts in p.TimeStep
-        @constraint(m, [t in p.Techs; !(t in p.TechsNoTurndown)],
+        @constraint(m, [t in p.Tech; !(t in p.TechsNoTurndown)],
             m[:dvRatedProduction][t,ts] <= p.ElectricDerate[t,ts] * m[:dvSize][t]
         )
     end
@@ -1550,6 +1554,7 @@ end
 function add_null_wind_results(m, p, r::Dict)
 	r["WINDtoLoad"] = []
 	r["WINDtoGrid"] = []
+    r["WINDtoMassProducer"] = []
 	nothing
 end
 
@@ -1566,6 +1571,7 @@ function add_null_chp_results(m, p, r::Dict)
 	r["chp_thermal_to_load_series"] = []
 	r["chp_thermal_to_tes_series"] = []
     r["chp_thermal_to_steamturbine_series"] = []
+    r["chp_thermal_to_massproducer_series"] = []
 	r["chp_thermal_to_waste_series"] = []
 	r["total_chp_fuel_cost"] = 0.0
 	r["year_one_chp_fuel_cost"] = 0.0
@@ -1578,6 +1584,7 @@ function add_null_boiler_results(m, p, r::Dict)
 	r["boiler_thermal_to_load_series"] = []
 	r["boiler_thermal_to_tes_series"] = []
     r["boiler_thermal_to_steamturbine_series"] = []
+    r["boiler_thermal_to_massproducer_series"] = []
 	r["year_one_fuel_to_boiler_kwh"] = 0.0
 	r["year_one_boiler_thermal_production_kwh"] = 0.0
 	r["total_boiler_fuel_cost"] = 0.0
@@ -1606,7 +1613,8 @@ end
 
 function add_null_hot_tes_results(m, p, r::Dict)
 	r["hot_tes_size_kwh"] = 0.0
-	r["hot_tes_thermal_production_series"] = []
+	r["hot_tes_thermal_to_load_series"] = []
+    r["hot_tes_thermal_to_massproducer_series"] = []
 	r["hot_tes_pct_soc_series"] = []
 	nothing
 end
@@ -1694,6 +1702,7 @@ function add_null_newboiler_results(m, p, r::Dict)
 	r["newboiler_thermal_to_load_series"] = []
 	r["newboiler_thermal_to_tes_series"] = []
 	r["newboiler_thermal_to_steamturbine_series"] = []
+    r["newboiler_thermal_to_massproducer_series"] = []
 	r["year_one_fuel_to_newboiler_kwh"] = 0.0
 	r["year_one_newboiler_thermal_production_kwh"] = 0.0
 	r["total_newboiler_fuel_cost"] = 0.0
@@ -1713,6 +1722,7 @@ function add_null_steamturbine_results(m, p, r::Dict)
 	r["steamturbine_to_grid_series"] = []
 	r["steamturbine_thermal_to_load_series"] = []
 	r["steamturbine_thermal_to_tes_series"] = []
+    r["steamturbine_thermal_to_massproducer_series"] = []
 	nothing
 end
 
