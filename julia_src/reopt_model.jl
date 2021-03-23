@@ -343,6 +343,10 @@ function add_bigM_adjustments(m, p)
 			end
 		end
 	end
+
+    for t in p.MassProducerTechs  # This will overwrite any NewMaxSize assigned above if Techs are also ElectricTechs (e.g. CHP and SteamTurbine)
+		m[:NewMaxSize][t] = p.MaxSize[t]
+	end
 end
 
 
@@ -521,15 +525,6 @@ function add_mass_producer_constraints(m, p)
             fix(m[:dvGridToMassProducer][ts], 0.0, force=true)
             for b in p.ElecStorage
                 fix(m[:dvStorageToMassProducer][b,ts], 0.0, force=true)
-            end
-            for b in p.HotTES
-                fix(m[:dvStorageToMassProducer][b,ts], 0.0, force=true)
-            end
-        end
-    elseif p.ThermalConsumedMassProducer == 0.0
-        for ts in p.TimeStep
-            for t in p.HeatingTechs
-                fix(m[:dvThermalToMassProducer][t,ts], 0.0, force=true)
             end
             for b in p.HotTES
                 fix(m[:dvStorageToMassProducer][b,ts], 0.0, force=true)
