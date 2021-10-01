@@ -258,6 +258,14 @@ Base.@kwdef struct Parameter
 	SRrequiredPctTechs::AxisArray
     OtherCapitalCosts::Float64
     OtherAnnualCosts::Float64
+	# MassProducer
+    MassProducerTechs::Array{String,1}
+    TechCanSupplyMassProducer::Array{String,1}
+    MassProducerConsumptionRatioIndex::Array{String,1}
+    MassProducerConsumptionRatios::AxisArray
+    MassProducerMassValue::Float64
+    MassProducerFeedstockCost::Float64
+    HotTESCanSupplyMassProducer::Int64
 end
 
 
@@ -351,7 +359,7 @@ function Parameter(d::Dict)
     d["ElecRate"] = transpose(reshape(d["ElecRate"], d["TimeStepCount"], d["PricingTierCount"]))
 
     if !isempty(d["GridExportRates"])
-        d["GridExportRates"] = AxisArray(array_of_array_to_2D_array(d["GridExportRates"]), 
+        d["GridExportRates"] = AxisArray(array_of_array_to_2D_array(d["GridExportRates"]),
                                          d["ExportTiers"], d[:TimeStep])
     else
         d["GridExportRates"] = AxisArray([])
@@ -386,6 +394,9 @@ function Parameter(d::Dict)
 
 	# Off-grid Modeling
 	d["SRrequiredPctTechs"] = AxisArray(d["SRrequiredPctTechs"], d["TechsProvidingSR"])
+
+	# MassProducer
+	d["MassProducerConsumptionRatios"] = AxisArray(d["MassProducerConsumptionRatios"], d["MassProducerConsumptionRatioIndex"])
 
     # Indexed Sets
     if isempty(d["FuelType"])
