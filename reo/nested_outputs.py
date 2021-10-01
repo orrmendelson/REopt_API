@@ -467,7 +467,12 @@ nested_output_definitions = {
                   "type": "list_of_float",
                   "description": "Spinning reserve provided by the PV system in each time step",
                   "units": "kW"
-                }
+                },
+                "year_one_to_massproducer_series_kw": {
+                  "type": "list_of_float",
+                  "description": "Year one hourly time series of PV serving MassProducer electric consumption",
+                  "units": "kW"
+                },
               },
 
               "Wind": {
@@ -515,7 +520,12 @@ nested_output_definitions = {
                   "type": "list_of_float",
                   "description": "Year one Wind power curtailed during outage time series",
                   "units": "kW"
-                }
+                },
+                "year_one_to_massproducer_series_kw": {
+                  "type": "list_of_float",
+                  "description": "Year one hourly time series of Wind serving MassProducer electric consumption",
+                  "units": "kW"
+                },
               },
 
               "Storage": {
@@ -548,7 +558,12 @@ nested_output_definitions = {
                   "type": "list_of_float",
                   "description": "Spinning reserve provided by the battery in each time step",
                   "units": "kW"
-                }
+                },
+                "year_one_to_massproducer_series_kw": {
+                  "type": "list_of_float",
+                  "description": "Year one hourly time series of Storage serving MassProducer electric consumption",
+                  "units": "kW"
+                },
               },
 
               "ElectricTariff": {
@@ -685,6 +700,11 @@ nested_output_definitions = {
                 "year_one_to_battery_series_kw": {
                   "type": "list_of_float",
                   "description": "Year one hourly time series of power from grid to battery",
+                  "units": "kW"
+                },
+                "year_one_to_massproducer_series_kw": {
+                  "type": "list_of_float",
+                  "description": "Year one hourly time series of power from grid to MassProducer",
                   "units": "kW"
                 },
                 "year_one_energy_supplied_kwh": {
@@ -912,7 +932,12 @@ nested_output_definitions = {
                   "type": "list_of_float",
                   "description": "Temp variable for fuel usage at each hour",
                   "units": "US gallons"
-                }
+                },
+                "year_one_to_massproducer_series_kw": {
+                  "type": "list_of_float",
+                  "description": "Year one hourly time series of Generator serving MassProducer electric consumption",
+                  "units": "kW"
+                },
               },
 
               "CHP": {
@@ -991,6 +1016,16 @@ nested_output_definitions = {
                   "description": "Total equivalent pounds of carbon dioxide emitted from CHP fuels consumed on site use in the first year in the BAU case.",
                   "units": "hours"
                 },
+                "year_one_electric_to_massproducer_series_kw": {
+                  "type": "list_of_float",
+                  "description": "Year one hourly time series of CHP serving MassProducer electric consumption",
+                  "units": "kW"
+                },
+                "year_one_thermal_to_massproducer_series_mmbtu_per_hr": {
+                  "type": "list_of_float",
+                  "description": "Year one hourly time series of CHP serving MassProducer thermal consumption",
+                  "units": "MMBtu/hr"
+                },
               },
 
               "Boiler": {
@@ -1038,7 +1073,12 @@ nested_output_definitions = {
                   "type": int,
                   "description": "Total equivalent pounds of carbon dioxide emitted from boiler fuels consumed on site use in the first year in the BAU case.",
                   "units": "hours"
-                }
+                },
+                "year_one_thermal_to_massproducer_series_mmbtu_per_hr": {
+                  "type": "list_of_float",
+                  "description": "Year one hourly time series of Boiler serving MassProducer thermal consumption",
+                  "units": "MMBtu/hr"
+                },
               },
 
               "ElectricChiller": {
@@ -1136,7 +1176,7 @@ nested_output_definitions = {
                   "description": "Optimal hot TES power capacity",
                   "units": "gal"
                 },
-                "year_one_thermal_from_hot_tes_series_mmbtu_per_hr": {
+                "year_one_thermal_to_load_series_mmbtu_per_hr": {
                   "type": list_of_float,
                   "description": "Year one hourly time series of TES serving hot thermal load",
                   "units": "MMBtu/hr"
@@ -1145,8 +1185,13 @@ nested_output_definitions = {
                   "type": list_of_float,
                   "description": "Year one hourly time series of hot TES state of charge",
                   "units": "%"
-                }
-            	},
+                },
+                "year_one_thermal_to_massproducer_series_mmbtu_per_hr": {
+                  "type": "list_of_float",
+                  "description": "Year one hourly time series of HotTES serving MassProducer thermal consumption",
+                  "units": "MMBtu/hr"
+                },
+              },
               "NewBoiler": {
                 "size_mmbtu_per_hr": {
                   "type": float,
@@ -1192,8 +1237,13 @@ nested_output_definitions = {
                   "type": int,
                   "description": "Total equivalent pounds of carbon dioxide emitted from NewBoiler fuels consumed on site use in the first year.",
                   "units": "hours"
-                }              
-            	},
+                },
+                "year_one_thermal_to_massproducer_series_mmbtu_per_hr": {
+                  "type": "list_of_float",
+                  "description": "Year one hourly time series of NewBoiler serving MassProducer thermal consumption",
+                  "units": "MMBtu/hr"
+                },
+              },
               "SteamTurbine": {
                 "size_kw": {
                   "type": float,
@@ -1249,27 +1299,99 @@ nested_output_definitions = {
                   "type": list_of_float,
                   "description": "Year one hourly time series of SteamTurbine thermal to Hot TES",
                   "units": "MMBtu/hr"
-                }
-            	},
-              "GHP": {
-                "ghp_chosen_uuid": {
-                  "type": "str",
-                  "description": "Unique id",
-                  "units": "none"
                 },
-                "ghpghx_chosen_outputs": {
+                "year_one_electric_to_massproducer_series_kw": {
+                  "type": "list_of_float",
+                  "description": "Year one hourly time series of SteamTurbine serving MassProducer electric consumption",
+                  "units": "kW"
+                },
+                "year_one_thermal_to_massproducer_series_mmbtu_per_hr": {
+                  "type": "list_of_float",
+                  "description": "Year one hourly time series of SteamTurbine serving MassProducer thermal consumption",
+                  "units": "MMBtu/hr"
+                },
+              },
+                "GHP": {
+                  "ghp_chosen_uuid": {
+                    "type": "str",
+                    "description": "Unique id",
+                    "units": "none"
+                  },
+                  "ghpghx_chosen_outputs": {
                     "type": "dict",
                     "description": "Output fields from the /ghpghx make_response(ghp_chosen_uuid)",
                     "units": "none"
+                  },
+                  "size_heat_pump_ton": {
+                    "type": float,
+                    "description": "Size of the aggregated heat pump based on coincident peak heating plus cooling, including a sizing factor",
+                    "units": "ton"
+                  },
                 },
-                "size_heat_pump_ton": {
+              "MassProducer": {
+                "size_mass_per_time": {
                   "type": float,
-                  "description": "Size of the aggregated heat pump based on coincident peak heating plus cooling, including a sizing factor",
-                  "units": "ton"
+                  "description": "Optimal MassProducer rated mass production rate",
+                  "units": "kW"
                 },
-              }
+                "year_one_electric_consumption_kwh": {
+                  "type": float,
+                  "description": "MassProducer electric consumed used over one year",
+                  "units": "MMBtu"
+                },
+                "year_one_thermal_consumption_mmbtu": {
+                  "type": float,
+                  "description": "MassProducer thermal consumed used over one year",
+                  "units": "MMBtu"
+                },
+                "year_one_mass_produced_mass": {
+                  "type": float,
+                  "description": "Year one mass produced by MassProducer",
+                  "units": "kWh"
+                },
+                "year_one_feedstock_consumption_mass": {
+                  "type": float,
+                  "description": "MassProducer feedstock (e.g. water, CO2) consumed used over one year",
+                  "units": "MMBtu"
+                },
+                "year_one_electric_consumption_series_kw": {
+                  "type": float,
+                  "description": "Year one MassProducer electric consumption time series",
+                  "units": "kW"
+                },
+                "year_one_thermal_consumption_series_mmbtu_per_hr": {
+                  "type": float,
+                  "description": "Year one MassProducer thermal consumption time series",
+                  "units": "MMBtu/hr"
+                },
+                "year_one_mass_production_series_mass_per_hr": {
+                  "type": list_of_float,
+                  "description": "Year one MassProducer mass production time series",
+                  "units": "mass"
+                },
+                "year_one_mass_value": {
+                  "type": float,
+                  "description": "Year one value of mass produced by MassProducer",
+                  "units": "$"
+                },
+                "year_one_feedstock_cost": {
+                  "type": float,
+                  "description": "Year one cost of feedstock consumed by MassProducer",
+                  "units": "$"
+                },
+                "total_mass_value": {
+                  "type": float,
+                  "description": "Total life cycle value of mass produced by MassProducer",
+                  "units": "$"
+                },
+                "total_feedstock_cost": {
+                  "type": float,
+                  "description": "Total life cycle cost of feedstock consumed by MassProducer",
+                  "units": "$"
+                }
+            }
           	}
-        	}
+        }
     },
 
     "messages": {

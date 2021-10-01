@@ -163,7 +163,7 @@ off_grid_defaults = {
           "max": 1.0,
           "default": 1.0,
           "description": "In off-grid scenarios, 100 percent of the typical load is assumed to be critical from a modeling standpoint (a 8760 hour outage is modeled). To adjust the 'critical load', change the typical load or the min_load_met_pct inputs."
-        },  
+        },
         "outage_is_major_event": {
           "type": "bool",
           "default": False,
@@ -871,7 +871,7 @@ nested_input_definitions = {
           "type": "list_of_float",
           "default": [0.0]*12,
           "description": "Array (length of 12) of blended fuel rates (total monthly energy in mmbtu divided by monthly cost in $)"
-        },        
+        },
       },
 
       "Wind": {
@@ -1672,7 +1672,7 @@ nested_input_definitions = {
           "type": "float",
           "min": 0.0,
           "max": max_big_number,
-          "default": 0.0,          
+          "default": 0.0,
           "description": "Minimum CHP size (based on electric) constraint for optimization"
         },
         "max_kw": {
@@ -1703,7 +1703,7 @@ nested_input_definitions = {
           "type": "float",
           "min": 0.0,
           "max": 1.0e4,
-          "default": 0.0,           
+          "default": 0.0,
           "description": "Annual CHP fixed operations and maintenance costs in $/kw-yr"
         },
         "om_cost_us_dollars_per_kwh": {
@@ -1716,7 +1716,7 @@ nested_input_definitions = {
           "type": "float",
           "min": 0.0,
           "max": 1.0,
-          "default": 0.0,          
+          "default": 0.0,
           "description": "CHP non-fuel variable operations and maintenance costs in $/hr/kw_rated"
         },
         "elec_effic_full_load": {
@@ -1779,21 +1779,21 @@ nested_input_definitions = {
           "type": "float",
           "min": 0.1,
           "max": 1.5,
-          "default": 1.0,          
+          "default": 1.0,
           "description": "Maximum derate factor; the y-axis value of the 'flat' part of the derate curve, on the left"
         },
         "derate_start_temp_degF": {
           "type": "float",
           "min": 0.0,
           "max": 150.0,
-          "default": 95.0,          
+          "default": 95.0,
           "description": "The outdoor air temperature at which the power starts to derate, units of degrees F"
         },
         "derate_slope_pct_per_degF": {
           "type": "float",
           "min": 0.0,
           "max": 1.0,
-          "default": 0.0,            
+          "default": 0.0,
           "description": "Derate slope as a percent/fraction of rated power per degree F"
         },
         "chp_unavailability_periods": {
@@ -1953,7 +1953,11 @@ nested_input_definitions = {
         "can_supply_steam_turbine": {
           "type": "bool", "default": False,
           "description": "If CHP can supply steam to the steam turbine for electric production"
-        },        
+        },
+        "can_supply_mp": {
+          "type": "bool", "default": False,
+          "description": "If CHP can supply hot thermal to the mass producer"
+        }
       },
 
       "ColdTES": {
@@ -1972,7 +1976,7 @@ nested_input_definitions = {
         "warmed_return_water_temp_degF": {
           "type": "float", "min": 6.0, "max": 120.0, "default": 56.0,
           "description": "Warmed-side return water temperature from the cooling load to the ColdTES (top of tank)"
-        },        
+        },
         "internal_efficiency_pct": {
           "type": "float", "min": 0.0, "max": 1.0, "default": 0.999999,
           "description": "Thermal losses due to mixing from thermal power entering or leaving tank"
@@ -2028,7 +2032,7 @@ nested_input_definitions = {
         "cooled_return_water_temp_degF": {
           "type": "float", "min": 33.0, "max": 200.0, "default": 160.0,
           "description": "Cold-side return water temperature from the heating load to the HotTES (bottom of tank)"
-        },        
+        },
         "internal_efficiency_pct": {
           "type": "float", "min": 0.0, "max": 1.0, "default": 0.999999,
           "description": "Thermal losses due to mixing from thermal power entering or leaving tank"
@@ -2066,6 +2070,11 @@ nested_input_definitions = {
           "default": 0.0,
           "description": "Percent of upfront project costs to depreciate under MACRS"
         },
+        "can_supply_mp": {
+          "type": "bool",
+          "default": False,
+          "description": "If the HotTES can supply useful thermal energy to the MassProducer"
+        }
       },
 
       "Boiler": {
@@ -2093,7 +2102,11 @@ nested_input_definitions = {
         "can_supply_steam_turbine": {
           "type": "bool", "default": False,
           "description": "If the boiler can supply steam to the steam turbine for electric production"
-        }        
+        },
+        "can_supply_mp": {
+          "type": "bool", "default": False,
+          "description": "If the boiler can supply hot thermal to the mass producer"
+        }
       },
 
       "ElectricChiller": {
@@ -2194,7 +2207,11 @@ nested_input_definitions = {
           "max": 1.0,
           "default": 0.0,
           "description": "Percent of upfront project costs to depreciate under MACRS"
-        }        
+        },
+        "can_supply_mp": {
+          "type": "bool", "default": False,
+          "description": "If the boiler can supply hot thermal to the mass producer"
+        }
       },
       "SteamTurbine": {
         "size_class": {
@@ -2298,7 +2315,11 @@ nested_input_definitions = {
           "max": 1.0,
           "default": 0.0,
           "description": "Percent of upfront project costs to depreciate under MACRS"
-        }        
+        },
+        "can_supply_mp": {
+          "type": "bool", "default": False,
+          "description": "If the steam turbine can supply hot thermal to the mass producer"
+        }
       },
       "GHP": {
         "require_ghp_purchase": {
@@ -2358,7 +2379,7 @@ nested_input_definitions = {
         "can_serve_dhw": {
           "type": "bool", "default": False,
           "description": "If GHP can serve the domestic hot water (DHW) portion of the heating load"
-        },              
+        },
         "macrs_option_years": {
           "type": "int",
           "restrict_to": macrs_schedules,
@@ -2449,7 +2470,74 @@ nested_input_definitions = {
           "default": max_incentive,
           "description": "Maximum rebate allowed under utility rebates"
         }
-      }
+      },
+      "MassProducer": {
+        "mass_units": {
+          "type": "str",
+          "restrict_to": ["kg", "lb", "mmbtu", "kwh"],
+          "default": "kg",
+          "description": "Units of mass (or energy) to be used for all relevant inputs"
+        },
+        "time_units": {
+          "type": "str",
+          "restrict_to": ["day", "hr", "sec"],
+          "default": "day",
+          "description": "Units of time (or energy) to be used for all relevant inputs"
+        },
+        "min_mass_per_time": {
+          "type": "float", "min": 0.0, "max": 1.0e9, "default": 0.0,
+          "description": "Minimum size based on mass production rate"
+        },
+        "max_mass_per_time": {
+          "type": "float", "min": 0.0, "max": 1.0e9, "default": 0.0,
+          "description": "Maximum size based on mass production rate"
+        },
+        "electric_consumed_to_mass_produced_ratio_kwh_per_mass": {
+          "type": "float", "min": 0.0, "max": 1.0E9,
+          "description": "Ratio of electric energy consumed to mass produced"
+        },
+        "thermal_consumed_to_mass_produced_ratio_kwh_per_mass": {
+          "type": "float", "min": 0.0, "max": 1.0E9,
+          "description": "Ratio of thermal energy consumed to mass produced"
+        },
+        "feedstock_consumed_to_mass_produced_ratio": {
+          "type": "float", "min": 0.0, "max": 1.0E9,
+          "description": "Ratio of feedstock (e.g. water, CO2) mass consumed to mass produced"
+        },
+        "installed_cost_us_dollars_per_mass_per_time": {
+          "type": "float", "min": 0.0, "max": 1.0E9,
+          "description": "Mass production rate capacity based cost"
+        },
+        "om_cost_us_dollars_per_mass_per_time": {
+          "type": "float", "min": 0.0, "max": 1.0E9,
+          "description": "Mass production rate capacity based (fixed) O&M cost"
+        },
+        "om_cost_us_dollars_per_mass": {
+          "type": "float", "min": 0.0, "max": 1.0E9,
+          "description": "Mass based variable O&M cost"
+        },
+        "mass_value_us_dollars_per_mass": {
+          "type": "float", "min": 0.0, "max": 1.0E9,
+          "description": "The value/price that the MassProducer gets credit for producing"
+        },
+        "feedstock_cost_us_dollars_per_mass": {
+          "type": "float", "min": 0.0, "max": 1.0E9,
+          "description": "The cost of the feedstock to the MassProducer"
+        },
+        "macrs_option_years": {
+          "type": "int",
+          "restrict_to": macrs_schedules,
+          "default": 0,
+          "description": "MACRS schedule for financial analysis. Set to zero to disable"
+        },
+        "macrs_bonus_pct": {
+          "type": "float",
+          "min": 0.0,
+          "max": 1.0,
+          "default": 0.0,
+          "description": "Percent of upfront project costs to depreciate under MACRS"
+        }        
+      }      
     }
   }
 }
