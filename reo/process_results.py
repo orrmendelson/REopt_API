@@ -941,6 +941,8 @@ def process_results(self, dfm_list, data, meta, saveToDB=True):
                         "year_one_thermal_to_load_series_mmbtu_per_hour"] = [x / MMBTU_TO_KWH for x in self.results_dict.get("steamturbine_thermal_to_load_series")]
                     self.nested_outputs["Scenario"]["Site"][name][
                         "year_one_thermal_to_tes_series_mmbtu_per_hour"] = [x / MMBTU_TO_KWH for x in self.results_dict.get("steamturbine_thermal_to_tes_series")]
+                    self.nested_outputs["Scenario"]["Site"][name][
+                        "year_one_thermal_to_massproducer_series_mmbtu_per_hr"] = [x / MMBTU_TO_KWH for x in self.results_dict.get("steamturbine_thermal_to_massproducer_series")]                        
                 elif name == "GHP":
                     if self.results_dict.get("GHPOptionChosen") >= 1:
                         ghp_uuid = self.dm.get("ghp_uuid_list")[self.results_dict.get("GHPOptionChosen")-1] # -1 is right
@@ -951,9 +953,6 @@ def process_results(self, dfm_list, data, meta, saveToDB=True):
                         self.nested_outputs["Scenario"]["Site"][name]["ghpghx_chosen_outputs"]["cooling_thermal_load_ton"] = ghpghx_chosen["inputs"]["cooling_thermal_load_ton"]
                         self.nested_outputs["Scenario"]["Site"][name]["size_heat_pump_ton"] = ghpghx_chosen["outputs"]["peak_combined_heatpump_thermal_ton"] * \
                                                                                                 data['inputs']['Scenario']["Site"]["GHP"]["heatpump_capacity_sizing_factor_on_peak_load"]
-
-                    self.nested_outputs["Scenario"]["Site"][name][
-                        "year_one_thermal_to_massproducer_series_mmbtu_per_hr"] = [x / MMBTU_TO_KWH for x in self.results_dict.get("steamturbine_thermal_to_massproducer_series")]
                 elif name == "MassProducer":
                     mass_units = self.inputs["MassProducer"]["mass_units"]
                     time_units = self.inputs["MassProducer"]["time_units"]
