@@ -917,11 +917,11 @@ function add_load_balance_constraints(m, p)
 		sum(p.ProductionFactor[t,ts] * p.LevelizationFactor[t] * m[:dvElectricToMassProducer][t,ts] for t in p.ElectricTechs)
 	)
 
-	if !p.OffGridFlag: # fix dvLoadServed to 100% for "on-grid" analyses
+	if !p.OffGridFlag # fix dvLoadServed to 100% for "on-grid" analyses 
 		for ts in p.TimeStep
 			fix(m[:dvLoadServed][ts], 1.0, force=true)
 		end
-	else:
+	else
 		@constraint(m, [ts in p.TimeStepsWithoutGrid],
 			m[:dvLoadServed][ts] <= 1
 		)
