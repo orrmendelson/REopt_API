@@ -266,12 +266,14 @@ function add_bigM_adjustments(m, p)
 					for ts in p.TimeStepRatchetsMonth[mth]])  -
 					sum(m[:NewMaxDemandMonthsInTier][mth,np] for np in 1:(n-1))]
 				)
+                m[:NewMaxDemandMonthsInTier][mth,n] = 1.0E6
 			else
 				m[:NewMaxDemandMonthsInTier][mth,n] = minimum([p.MaxDemandMonthsInTier[n],
 					added_power + 2*maximum([p.ElecLoad[ts] + p.CoolingLoad[ts] +
                     add_ghp_heating_elec * p.HeatingLoad[ts]
 					for ts in p.TimeStepRatchetsMonth[mth]])]
                 )
+                m[:NewMaxDemandMonthsInTier][mth,n] = 1.0E6
 			end
 		end
 	end
@@ -286,35 +288,42 @@ function add_bigM_adjustments(m, p)
 					for ts in p.TimeStep])  -
 				sum(m[:NewMaxDemandInTier][r,ep] for ep in 1:(e-1))
 				])
+                m[:NewMaxDemandInTier][r,e] = 1.0E6
 			else
 				m[:NewMaxDemandInTier][r,e] = minimum([p.MaxDemandInTier[e],
 				added_power + 2*maximum([p.ElecLoad[ts] + p.CoolingLoad[ts] +
                 add_ghp_heating_elec * p.HeatingLoad[ts]
 					for ts in p.TimeStep])
 				])
+                m[:NewMaxDemandInTier][r,e] = 1.0E6
 			end
 		end
 	end
 
 	# m[:NewMaxUsageInTier] sets a new minumum if the total demand for the month, minus the size of all previous bins, is less than the existing bin size.
-	for u in p.PricingTier
-		for mth in p.Month
-			if u > 1
-				m[:NewMaxUsageInTier][mth,u] = minimum([p.MaxUsageInTier[u],
-					added_energy + 2*sum(p.ElecLoad[ts] + p.CoolingLoad[ts] +
-                    add_ghp_heating_elec * p.HeatingLoad[ts]
-					for ts in p.TimeStepRatchetsMonth[mth]) - sum(m[:NewMaxUsageInTier][mth,up] for up in 1:(u-1))
-				])
-			else
-				m[:NewMaxUsageInTier][mth,u] = minimum([p.MaxUsageInTier[u],
-					added_energy + 2*sum(p.ElecLoad[ts] + p.CoolingLoad[ts] +
-                    add_ghp_heating_elec * p.HeatingLoad[ts]
-					for ts in p.TimeStepRatchetsMonth[mth])
-				])
-			end
-		end
-	end
-
+    if length(p.PricingTier) > 1    
+        for u in p.PricingTier
+            for mth in p.Month
+                if u > 1
+                    m[:NewMaxUsageInTier][mth,u] = minimum([p.MaxUsageInTier[u],
+                        added_energy + 2*sum(p.ElecLoad[ts] + p.CoolingLoad[ts] +
+                        add_ghp_heating_elec * p.HeatingLoad[ts]
+                        for ts in p.TimeStepRatchetsMonth[mth]) - sum(m[:NewMaxUsageInTier][mth,up] for up in 1:(u-1))
+                    ])
+                else
+                    m[:NewMaxUsageInTier][mth,u] = minimum([p.MaxUsageInTier[u],
+                        added_energy + 2*sum(p.ElecLoad[ts] + p.CoolingLoad[ts] +
+                        add_ghp_heating_elec * p.HeatingLoad[ts]
+                        for ts in p.TimeStepRatchetsMonth[mth])
+                    ])
+                end
+            end
+        end
+    else
+        for mth in p.Month
+            m[:NewMaxUsageInTier][mth,1] = 1.0E8
+        end
+    end
 	# NewMaxSize generates a new maximum size that is equal to the largest monthly load of the year.
 	# This is intended to be a reasonable upper bound on size that would never be exceeeded,
 	# but is sufficienctly small to replace much larger big-M values placed as a default.
@@ -341,6 +350,7 @@ function add_bigM_adjustments(m, p)
 			if m[:NewMaxSize][t] > p.MaxSize[t] || m[:NewMaxSize][t] < p.TechClassMinSize[c]
 				m[:NewMaxSize][t] = p.MaxSize[t]
 			end
+            m[:NewMaxSize][t] = p.MaxSize[t]
 		end
 	end
 
