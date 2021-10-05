@@ -108,7 +108,7 @@ class ElecTariff(object):
             urdb_response = self.make_urdb_rate(blended_monthly_rates_us_dollars_per_kwh,
                                                 blended_monthly_demand_charges_us_dollars_per_kw)
 
-        if self.tou_energy_rates is None:
+        if self.tou_energy_rates is None or self.add_tou_energy_rates_to_urdb_rate is True:
             self.utility_name = re.sub(r'\W+', '', str(urdb_response.get('utility')))
             self.rate_name = re.sub(r'\W+', '', str(urdb_response.get('name')))
             self.urdb_response = urdb_response
