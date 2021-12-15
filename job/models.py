@@ -58,6 +58,32 @@ class MACRS_YEARS_CHOICES(models.IntegerChoices):
     SEVEN = 7
 
 
+DOE_REFERENCE_NAME = models.TextChoices('DOE_REFERENCE_NAME', (
+    'FastFoodRest '
+    'FullServiceRest '
+    'Hospital '
+    'LargeHotel '
+    'LargeOffice '
+    'MediumOffice '
+    'MidriseApartment '
+    'Outpatient '
+    'PrimarySchool '
+    'RetailStore '
+    'SecondarySchool '
+    'SmallHotel '
+    'SmallOffice '
+    'StripMall '
+    'Supermarket '
+    'Warehouse '
+    'FlatLoad '
+    'FlatLoad_24_5 '
+    'FlatLoad_16_7 '
+    'FlatLoad_16_5 '
+    'FlatLoad_8_7 '
+    'FlatLoad_8_5'
+))
+
+
 def at_least_one_set(model, possible_sets):
     """
     Check if at least one set of possible_sets are defined in the Model.dict
@@ -577,6 +603,10 @@ class FinancialOutputs(BaseModel, models.Model):
         help_text=("Net O&M and replacement costs in present value, after-tax for the third-party developer."
                    "Only calculated in the third-party case.")
     )
+    lifecycle_fuel_costs_after_tax = models.FloatField(
+        null=True, blank=True,
+        help_text="Net present fuel costs for all fuel burning technologies after tax (using offtaker's tax rate)."
+    )
 
 
 class ElectricLoadInputs(BaseModel, models.Model):
@@ -596,31 +626,6 @@ class ElectricLoadInputs(BaseModel, models.Model):
         ["doe_reference_name"],
         ["blended_doe_reference_names", "blended_doe_reference_percents"]
     ]
-
-    DOE_REFERENCE_NAME = models.TextChoices('DOE_REFERENCE_NAME', (
-        'FastFoodRest '
-        'FullServiceRest '
-        'Hospital '
-        'LargeHotel '
-        'LargeOffice '
-        'MediumOffice '
-        'MidriseApartment '
-        'Outpatient '
-        'PrimarySchool '
-        'RetailStore '
-        'SecondarySchool '
-        'SmallHotel '
-        'SmallOffice '
-        'StripMall '
-        'Supermarket '
-        'Warehouse '
-        'FlatLoad '
-        'FlatLoad_24_5 '
-        'FlatLoad_16_7 '
-        'FlatLoad_16_5 '
-        'FlatLoad_8_7 '
-        'FlatLoad_8_5'
-    ))
 
     annual_kwh = models.FloatField(
         validators=[
@@ -2633,6 +2638,78 @@ class ExistingBoilerOutputs(BaseModel, models.Model):
     year_one_emissions_bau_lb_C02 = models.FloatField(null=True, blank=True)
     lifecycle_fuel_cost = models.FloatField(null=True, blank=True)
     year_one_fuel_cost = models.FloatField(null=True, blank=True)
+
+
+class SpaceHeatingLoadInputs(BaseModel, models.Model):
+    key = "SpaceHeatingLoad"
+    meta = models.OneToOneField(
+        APIMeta,
+        on_delete=models.CASCADE,
+        related_name="SpaceHeatingLoadInputs",
+        primary_key=True
+    )
+
+    annual_mmbtu = models.FloatField(
+        validators=[
+            MinValueValidator(1),
+            MaxValueValidator(1.0e8)
+        ],
+        null=True, blank=True,
+        help_text=("Annual electric chiller electric consumption, in mmbtu, used to scale simulated default boiler "
+                   "load profile for the site's climate zone. If no value is provided then the DoE Commercial "
+                   "Reference Building value is used.")
+    )
+    monthly_mmbtu = ArrayField(
+        models.FloatField(
+            validators=[
+                MinValueValidator(0),
+                MaxValueValidator(1.0e8)
+            ],
+            blank=True
+        ),
+        default=list, blank=True,
+        help_text=("Monthly boiler energy consumption series (an array 12 entries long), in mmbtu, used to scale "
+                   "simulated default boiler load profile for the site's climate zone. If no values are provided then "
+                   "the DoE Commercial Reference Building values are used.")
+    )
+    doe_reference_name = models.TextField(
+        null=False,
+        blank=True,
+        choices=DOE_REFERENCE_NAME.choices,
+        help_text=("Simulated load profile from DOE Commercial Reference Buildings. "
+                   "If no value is provided then the `doe_reference_name` from the `ElectricLoad` is used. "
+                   "https://energy.gov/eere/buildings/commercial-reference-buildings")
+    )
+    fuel_loads_mmbtu_per_hour = ArrayField(
+        models.FloatField(blank=True),
+        default=list, blank=True,
+        help_text=("Typical boiler fuel load for all hours in one year. Over-rides `doe_reference_name` and other "
+                  "values if provided.")
+    )
+    blended_doe_reference_names = ArrayField(
+        models.TextField(
+            choices=DOE_REFERENCE_NAME.choices,
+            blank=True
+        ),
+        default=list,
+        blank=True,
+        help_text=("Used in concert with blended_doe_reference_percents to create a blended load profile from multiple "
+                   "DoE Commercial Reference Buildings.")
+    )
+    blended_doe_reference_percents = ArrayField(
+        models.FloatField(
+            null=True, blank=True,
+            validators=[
+                MinValueValidator(0),
+                MaxValueValidator(1.0)
+            ],
+        ),
+        default=list,
+        blank=True,
+        help_text=("Used in concert with blended_doe_reference_names to create a blended load profile from multiple "
+                   "DoE Commercial Reference Buildings. Must sum to 1.0.")
+    )
+
 
 
 class Message(BaseModel, models.Model):

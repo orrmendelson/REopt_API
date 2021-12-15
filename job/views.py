@@ -36,7 +36,7 @@ from reo.exceptions import UnexpectedError
 from job.models import Settings, PVInputs, StorageInputs, WindInputs, GeneratorInputs, ElectricLoadInputs,\
     ElectricTariffInputs, ElectricUtilityInputs, PVOutputs, StorageOutputs, WindOutputs, GeneratorOutputs, \
     ElectricTariffOutputs, ElectricUtilityOutputs, ElectricLoadOutputs, APIMeta, UserProvidedMeta, \
-    ExistingBoilerInputs, ExistingBoilerOutputs
+    ExistingBoilerInputs, ExistingBoilerOutputs, SpaceHeatingLoadInputs
 
 
 def make_error_resp(msg):
@@ -62,6 +62,7 @@ def help(request):
         d["Wind"] = WindInputs.info_dict(WindInputs)
         d["Generator"] = GeneratorInputs.info_dict(GeneratorInputs)
         d["ExistingBoiler"] = ExistingBoilerInputs.info_dict(ExistingBoilerInputs)
+        d["SpaceHeatingLoad"] = SpaceHeatingLoadInputs.info_dict(SpaceHeatingLoadInputs)
         return JsonResponse(d)
 
     except Exception as e:
@@ -180,6 +181,9 @@ def results(request, run_uuid):
     except: pass
 
     try: r["inputs"]["ExistingBoiler"] = meta.ExistingBoilerInputs.dict
+    except: pass
+
+    try: r["inputs"]["SpaceHeating"] = meta.SpaceHeatingLoadInputs.dict
     except: pass
 
     try:
