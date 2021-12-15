@@ -30,7 +30,8 @@
 import logging
 import pandas as pd
 from job.models import APIMeta, UserProvidedMeta, SiteInputs, Settings, ElectricLoadInputs, ElectricTariffInputs, \
-    FinancialInputs, BaseModel, Message, ElectricUtilityInputs, PVInputs, StorageInputs, GeneratorInputs, WindInputs
+    FinancialInputs, BaseModel, Message, ElectricUtilityInputs, PVInputs, StorageInputs, GeneratorInputs, WindInputs, \
+    ExistingBoilerInputs
 from django.core.exceptions import ValidationError
 from pyproj import Proj
 
@@ -71,7 +72,7 @@ class InputValidator(object):
             - inputs within min/max limits
             - fills in default values
         2. Check requirements across each Model's fields
-            - eg. if user provides outage_start_time_step then must also provide outage_start_end_step
+            - eg. if user provides outage_start_time_step then must also provide outage_end_time_step
         3. Check requirements across Model fields
             - eg. the time_steps_per_hour must align with the length of loads_kw
         """
@@ -91,7 +92,8 @@ class InputValidator(object):
             PVInputs,
             StorageInputs,
             GeneratorInputs,
-            WindInputs
+            WindInputs,
+            ExistingBoilerInputs
         )
         self.pvnames = []
         required_object_names = [

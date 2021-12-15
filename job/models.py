@@ -2567,6 +2567,74 @@ class GeneratorOutputs(BaseModel, models.Model):
     year_one_emissions_bau_lb_C02 = models.FloatField(null=True, blank=True)
 
 
+class ExistingBoilerInputs(BaseModel, models.Model):
+    key = "ExistingBoiler"
+    meta = models.OneToOneField(
+        APIMeta,
+        on_delete=models.CASCADE,
+        related_name="ExistingBoilerInputs",
+        primary_key=True
+    )
+
+    max_thermal_factor_on_peak_load = models.FloatField(
+        default=1.25,
+        validators=[
+            MinValueValidator(1.0),
+            MaxValueValidator(5.0)
+        ],
+        blank=True,
+        help_text="Factor on peak thermal load that the boiler can supply"
+    )
+    production_type = models.TextField(
+        default="hot_water",
+        choices=models.TextChoices("ExistingBoiler__production_type", ("hot_water", "steam")).choices,
+        blank=True,
+        help_text="Boiler thermal production type, `hot_water` or `steam`."
+    )
+    efficiency = models.FloatField(
+        blank=True,
+        default=0,
+        help_text=("Existing boiler system efficiency - conversion of fuel to usable heating thermal energy. "
+                   "Default value depends on `production_type`. Provide non-zero value to over-ride default.")
+    )
+    # emissions_factor_lb_CO2_per_mmbtu = models.FloatField(
+    #     null=True,
+    #     blank=True,
+    #     help_text="Pounds of carbon dioxide emitted per gallon of fuel burned."
+    # )
+    # can_supply_steam_turbine = models.BooleanField(
+    #     default=False,
+    #     blank=True,
+    #     help_text="If the boiler can supply steam to the steam turbine for electric production."
+    # )
+
+
+class ExistingBoilerOutputs(BaseModel, models.Model):
+    key = "ExistingBoilerOutputs"
+    meta = models.OneToOneField(
+        APIMeta,
+        on_delete=models.CASCADE,
+        related_name="ExistingBoilerOutputs",
+        primary_key=True
+    )
+    year_one_fuel_consumption_mmbtu_per_hr = ArrayField(
+            models.FloatField(null=True, blank=True), default=list, null=True, blank=True)
+    year_one_thermal_production_mmbtu_per_hr = ArrayField(
+            models.FloatField(null=True, blank=True), default=list, null=True, blank=True)
+    year_one_thermal_to_load_mmbtu_per_hour = ArrayField(
+            models.FloatField(null=True, blank=True), default=list, null=True, blank=True)
+    year_one_thermal_to_tes_mmbtu_per_hour = ArrayField(
+            models.FloatField(null=True, blank=True), default=list, null=True, blank=True)
+    year_one_thermal_to_steamturbine_mmbtu_per_hour = ArrayField(
+            models.FloatField(null=True, blank=True), default=list, null=True, blank=True)
+    year_one_fuel_consumption_mmbtu = models.FloatField(null=True, blank=True)
+    year_one_thermal_production_mmbtu = models.FloatField(null=True, blank=True)
+    year_one_emissions_lb_C02 = models.FloatField(null=True, blank=True)
+    year_one_emissions_bau_lb_C02 = models.FloatField(null=True, blank=True)
+    lifecycle_fuel_cost = models.FloatField(null=True, blank=True)
+    year_one_fuel_cost = models.FloatField(null=True, blank=True)
+
+
 class Message(BaseModel, models.Model):
     """
     For Example:

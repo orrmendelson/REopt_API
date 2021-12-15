@@ -35,7 +35,8 @@ from django.http import JsonResponse
 from reo.exceptions import UnexpectedError
 from job.models import Settings, PVInputs, StorageInputs, WindInputs, GeneratorInputs, ElectricLoadInputs,\
     ElectricTariffInputs, ElectricUtilityInputs, PVOutputs, StorageOutputs, WindOutputs, GeneratorOutputs, \
-    ElectricTariffOutputs, ElectricUtilityOutputs, ElectricLoadOutputs, APIMeta, UserProvidedMeta
+    ElectricTariffOutputs, ElectricUtilityOutputs, ElectricLoadOutputs, APIMeta, UserProvidedMeta, \
+    ExistingBoilerInputs, ExistingBoilerOutputs
 
 
 def make_error_resp(msg):
@@ -60,6 +61,7 @@ def help(request):
         d["Storage"] = StorageInputs.info_dict(StorageInputs)
         d["Wind"] = WindInputs.info_dict(WindInputs)
         d["Generator"] = GeneratorInputs.info_dict(GeneratorInputs)
+        d["ExistingBoiler"] = ExistingBoilerInputs.info_dict(ExistingBoilerInputs)
         return JsonResponse(d)
 
     except Exception as e:
@@ -92,6 +94,7 @@ def outputs(request):
         d["Storage"] = StorageOutputs.info_dict(StorageOutputs)
         d["Wind"] = WindOutputs.info_dict(WindOutputs)
         d["Generator"] = GeneratorOutputs.info_dict(GeneratorOutputs)
+        d["ExistingBoiler"] = ExistingBoilerOutputs.info_dict(ExistingBoilerOutputs)
         return JsonResponse(d)
 
     except Exception as e:
@@ -118,7 +121,7 @@ def results(request, run_uuid):
     try:
         # get all required inputs/outputs
         meta = APIMeta.objects.select_related(
-                "Settings",
+            "Settings",
             'FinancialInputs', 'FinancialOutputs',
             'SiteInputs',
             'ElectricLoadInputs',
@@ -176,6 +179,9 @@ def results(request, run_uuid):
     try: r["inputs"]["Wind"] = meta.WindInputs.dict
     except: pass
 
+    try: r["inputs"]["ExistingBoiler"] = meta.ExistingBoilerInputs.dict
+    except: pass
+
     try:
         r["outputs"] = dict()
         r["messages"] = dict()
@@ -206,6 +212,8 @@ def results(request, run_uuid):
         try: r["outputs"]["Generator"] = meta.GeneratorOutputs.dict
         except: pass
         try: r["outputs"]["Wind"] = meta.WindOutputs.dict
+        except: pass
+        try: r["outputs"]["ExistingBoiler"] = meta.ExistingBoilerOutputs.dict
         except: pass
 
         for d in r["outputs"].values():

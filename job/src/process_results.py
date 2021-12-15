@@ -28,7 +28,7 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 # *********************************************************************************
 from job.models import FinancialOutputs, APIMeta, PVOutputs, StorageOutputs, ElectricTariffOutputs,\
-    ElectricUtilityOutputs, GeneratorOutputs, ElectricLoadOutputs, WindOutputs
+    ElectricUtilityOutputs, GeneratorOutputs, ElectricLoadOutputs, WindOutputs, ExistingBoilerOutputs
 
 
 def process_results(results: dict, run_uuid: str) -> None:
@@ -55,4 +55,6 @@ def process_results(results: dict, run_uuid: str) -> None:
         GeneratorOutputs.create(meta=meta, **results["Generator"]).save()
     if "Wind" in results.keys():
         WindOutputs.create(meta=meta, **results["Wind"]).save()
+    if "ExistingBoiler" in results.keys():
+        ExistingBoilerOutputs.create(meta=meta, **results["ExistingBoiler"]).save()
     # TODO process rest of results
