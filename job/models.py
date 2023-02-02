@@ -1398,7 +1398,7 @@ class ElectricTariffInputs(BaseModel, models.Model):
         ),
         default=list,
         blank=True,
-        help_text=("Price of electricity sold back to the grid above the site load, regardless of net metering. Can be "
+        help_text=("Price of electricity sold back to the grid beyond total annual grid purchases, regardless of net metering. Can be "
                    "a scalar value, which applies for all-time, or an array with time-sensitive values. If an array is "
                    "input then it must have a length of 8760, 17520, or 35040. The inputed array values are up/down-"
                    "sampled using mean values to match the Scenario time_steps_per_hour.")
@@ -2282,7 +2282,7 @@ class PVInputs(BaseModel, models.Model):
     can_export_beyond_nem_limit = models.BooleanField(
         blank=True,
         default = True,
-        help_text=("True/False for if technology can export energy beyond the annual site load (and be compensated for "
+        help_text=("True/False for if technology can export energy beyond the annual grid purchases (and be compensated for "
                    "that energy at the export_rate_beyond_net_metering_limit)."
                    "Note that if off-grid is true, can_export_beyond_nem_limit is always set to False.")
     )
@@ -2609,7 +2609,7 @@ class WindInputs(BaseModel, models.Model):
     can_export_beyond_nem_limit = models.BooleanField(
         default=True,
         blank=True,
-        help_text=("True/False for if technology can export energy beyond the annual site load (and be compensated for "
+        help_text=("True/False for if technology can export energy beyond the annual grid purchases (and be compensated for "
                    "that energy at the export_rate_beyond_net_metering_limit)."
                    "Note that if off-grid is true, can_export_beyond_nem_limit is always set to False.")
     )
@@ -3167,7 +3167,7 @@ class GeneratorInputs(BaseModel, models.Model):
     can_export_beyond_nem_limit = models.BooleanField(
         default=False,
         blank=True,
-        help_text=("True/False for if technology can export energy beyond the annual site load (and be compensated for "
+        help_text=("True/False for if technology can export energy beyond the annual grid purchases (and be compensated for "
                    "that energy at the export_rate_beyond_net_metering_limit).")
     )
     can_curtail = models.BooleanField(
