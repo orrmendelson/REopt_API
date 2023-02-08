@@ -2,12 +2,17 @@ appEnv: production
 djangoSettingsModule: reopt_api.production_settings
 djangoReplicas: 10
 <<<<<<< HEAD
+<<<<<<< HEAD
 djangoMemoryRequest: "2800Mi"
 djangoMemoryLimit: "2800Mi"
 =======
 djangoMemoryRequest: "1400Mi"
 djangoMemoryLimit: "1400Mi"
 >>>>>>> bd18365d (Increase django workers and replicas to try and handle higher load.)
+=======
+djangoMemoryRequest: "2800Mi"
+djangoMemoryLimit: "2800Mi"
+>>>>>>> 88be0ff2 (Increase django memory allocations for higher worker node count.)
 celeryReplicas: 20
 celeryMemoryRequest: "900Mi"
 celeryMemoryLimit: "900Mi"
