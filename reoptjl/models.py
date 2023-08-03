@@ -5070,7 +5070,7 @@ class HotThermalStorageInputs(BaseModel, models.Model):
         help_text="Percent of upfront project costs to depreciate in year one in addition to scheduled depreciation"
     )
     macrs_itc_reduction = models.FloatField(
-        default=0.0,
+        default=0.5,
         validators=[
             MinValueValidator(0),
             MaxValueValidator(1)
@@ -5241,7 +5241,7 @@ class ColdThermalStorageInputs(BaseModel, models.Model):
         help_text="Percent of upfront project costs to depreciate in year one in addition to scheduled depreciation"
     )
     macrs_itc_reduction = models.FloatField(
-        default=0.0,
+        default=0.5,
         validators=[
             MinValueValidator(0),
             MaxValueValidator(1)
