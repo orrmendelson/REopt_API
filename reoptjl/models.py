@@ -6374,6 +6374,28 @@ class GHPInputs(BaseModel, models.Model):
         help_text="Installed heating heat pump cost in $/ton (based on peak coincident cooling+heating thermal load)"
     )
 
+    installed_cost_wwhp_heating_pump_per_ton = models.FloatField(
+        default=700.0,
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(1.0e5)
+        ],
+        blank=True,
+        null=True,
+        help_text="Installed WWHP heating heat pump cost in $/ton"
+    )
+
+    installed_cost_wwhp_cooling_pump_per_ton = models.FloatField(
+        default=700.0,
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(1.0e5)
+        ],
+        blank=True,
+        null=True,
+        help_text="Installed WWHP cooling heat pump cost in $/ton"
+    )
+
     heatpump_capacity_sizing_factor_on_peak_load = models.FloatField(
         default=1.1,
         validators=[
