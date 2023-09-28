@@ -6537,6 +6537,81 @@ class GHPInputs(BaseModel, models.Model):
         help_text="Cooling efficiency factor (annual average) to account for reduced cooling thermal load from GHP retrofit (e.g. reduced reheat)"
     )
 
+    ghx_useful_life_years = models.IntegerField(
+        validators=[
+            MinValueValidator(1),
+            MaxValueValidator(75)
+        ],
+        blank=True,
+        default=50,
+        help_text="Lifetime of geothermal heat exchanger being modeled in years. This is used to calculate residual value at end of REopt analysis period. If this value is less than Financial.analysis_years, it is updated to equal Financial.analysis_years"
+    )
+
+    # This field is calculated in REopt.jl per GhpGhx_results and other inputs
+    ghx_only_capital_cost = models.IntegerField(
+        validators=[
+            MinValueValidator(1),
+            MaxValueValidator(MAX_BIG_NUMBER)
+        ],
+        blank=True,
+        null=True,
+        help_text = "Capital costs associated with geothermal heat exchanger only."
+    )
+
+    # should we remove this or make it not accessible through API?
+    aux_heater_type = models.TextField(
+        blank=True,
+        null=True,
+        help_text="This field only accepts \"electric\" as the auxillary heater type."
+    )
+
+    # # This field is set in REopt.jl, not user provided.
+    # is_ghx_hybrid = models.BooleanField(
+    #     blank=True,
+    #     null=True,
+    #     help_text="Flag indicating if Ghx is hybrid."
+    # )
+
+    aux_heater_installed_cost_per_mmbtu_per_hr = models.FloatField(
+        validators=[
+            MinValueValidator(1.0),
+            MaxValueValidator(1.0e6)
+        ],
+        blank=True,
+        default=26000.00,
+        help_text="Installed cost of auxiliary heater for hybrid ghx in $/MMBtu/hr based on peak thermal production"
+    )
+
+    aux_cooler_installed_cost_per_ton = models.FloatField(
+        validators=[
+            MinValueValidator(1.0),
+            MaxValueValidator(MAX_BIG_NUMBER)
+        ],
+        blank=True,
+        default=400.00,
+        help_text="Installed cost of auxiliary cooler (e.g. cooling tower) for hybrid ghx in $/ton based on peak thermal production"
+    )
+
+    aux_unit_capacity_sizing_factor_on_peak_load = models.FloatField(
+        validators=[
+            MinValueValidator(1.0),
+            MaxValueValidator(5.0)
+        ],
+        blank=True,
+        default=1.2,
+        help_text="Factor on peak heating and cooling load served by the auxiliary heater/cooler used for determining heater/cooler installed capacity"
+    )
+
+    avoided_capex_by_ghp_present_value = models.FloatField(
+        validators=[
+            MinValueValidator(0.0),
+            MaxValueValidator(MAX_BIG_NUMBER)
+        ],
+        blank=True,
+        default=0.0,
+        help_text="Dollar present value of HVAC upgrade costs avoided after GHP tech is installed."
+    )
+
     ghpghx_inputs = ArrayField(
         models.JSONField(
             null=True,
@@ -6721,6 +6796,7 @@ class GHPOutputs(BaseModel, models.Model):
             models.FloatField(null=True, blank=True), default=list, null=True, blank=True)
     cooling_thermal_load_reduction_with_ghp_ton = ArrayField(
             models.FloatField(null=True, blank=True), default=list, null=True, blank=True)
+    ghx_residual_value_present_value = models.FloatField(null=True, blank=True)
 
 
 def get_input_dict_from_run_uuid(run_uuid:str):
