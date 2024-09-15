@@ -1,11 +1,21 @@
+
 services:
+
   redis:
-    image: redis:latest
+    image: redis
     command: redis-server
     expose:
       - 6379
-    ports:
-      - "6379:6379"
+
+  db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=reopt
+      - POSTGRES_PASSWORD=reopt
+      - POSTGRES_DB=reopt
+    expose:
+      - 5432
 
   postgres:
     image: postgres:latest
@@ -15,67 +25,51 @@ services:
       POSTGRES_DB: reopt
       POSTGRES_USER: reopt_api
       POSTGRES_PASSWORD: reopt
-    expose:
-      - 5432
 
   celery:
     build:
       context: .
       dockerfile: Dockerfile
     image: base-api-image
-    command: celery -A reopt_api worker -l info
+    command:  >
+      "celery -A reopt_api worker -l info"
     environment:
       - APP_ENV=local
-      - DJANGO_SETTINGS_MODULE=reopt_api.dev_settings  # Ensure this matches your settings file
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - SQL_HOST=db
+      - SQL_PORT=5432
       - REDIS_HOST=redis
     volumes:
       - .:/opt/reopt
     depends_on:
-      - postgres
+      - db
       - redis
-      - django
-    networks:
-      - my_network
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-        labels: "celery"
-    env_file:
-      - .env  # If you're using an environment file
+      - julia
 
   django:
     build:
       context: .
       dockerfile: Dockerfile
     image: base-api-image
-    command: /opt/reopt/bin/wait-for-it.bash postgres:5432 -t 0 -- python manage.py runserver 0.0.0.0:8000
+    command:  >
+      "python manage.py migrate
+      && /opt/reopt/bin/wait-for-it.bash -t 0 julia:8081 -- python manage.py runserver 0.0.0.0:8000"
     environment:
       - APP_ENV=local
-      - SQL_HOST=postgres
+      - SQL_HOST=db
       - SQL_PORT=5432
       - REDIS_HOST=redis
-      - DATABASE_URL=postgres://reopt_api:reopt@postgres:5432/reopt
+      - DATABASE_URL=postgres://reopt_api:reopt@db:5432/reopt
       - DJANGO_SETTINGS_MODULE=reopt_api.dev_settings
-    volumes:
-      - .:/opt/reopt
     depends_on:
-      - postgres
+      - db
       - redis
       - julia
     ports:
       - 8000:8000
+    volumes:
+      - .:/opt/reopt
     networks:
       - my_network
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-        labels: "django"
 
   julia:
     container_name: julia_api
@@ -90,8 +84,6 @@ services:
       - "8081:8081"
     volumes:
       - ./julia_src:/opt/julia_src
-    networks:
-      - my_network
 
 networks:
   my_network:

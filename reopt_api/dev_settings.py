@@ -87,33 +87,58 @@ ROLLBAR = {
     'enabled':True
 }
 
+
+# dev_database_host = 'localhost'
+# dev_database_name = 'reopt_db'
+# dev_user = 'reopt_api'
+# dev_user_password = 'reopt'
+# 'ENGINE': 'django.db.backends.postgresql',
+# 'NAME': '<your_database_name>',
+# 'USER': '<your_database_user>',
+# 'PASSWORD': '<your_database_password>',
+# 'HOST': 'reopt_db',  # This should be the name of the PostgreSQL container
+# 'PORT': '5432',
+
+
 # Database
 if 'test' in sys.argv or os.environ.get('APP_ENV') == 'local':
     ROLLBAR['enabled'] = False
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'ENGINE': 'django.db.backends.postgresql',
             'NAME': 'reopt',
-            'USER': 'reopt',
+            'USER': 'reopt_api',
             'PASSWORD': 'reopt',
+            "HOST": 'postgres',
+            "PORT": '5432',
             'OPTIONS': {
-                 'options': '-c search_path=public'
-             },
-            "HOST": os.environ.get("SQL_HOST", "localhost"),
-            "PORT": os.environ.get("SQL_PORT", "5432"),
+                'options': '-c search_path=public'
+            },
         }
+        # 'default': {
+        #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        #     'NAME': dev_database_name,
+        #     'USER': dev_user,
+        #     'PASSWORD': dev_user_password,
+        #     'OPTIONS': {
+        #          'options': '-c search_path=public'
+        #      },
+        #     "HOST": os.environ.get("SQL_HOST", "localhost"),
+        #     "PORT": os.environ.get("SQL_PORT", "5432"),
+        # }
 }
 else:
     DATABASES = {
          'default': {
-             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-             'HOST': dev_database_host,
-             'NAME': dev_database_name,
+             'ENGINE': 'django.db.backends.postgresql',
+             'NAME': 'reopt_db',
+             'USER': 'reopt_api',
+             'PASSWORD': 'reopt',
+             "HOST": 'reopt_db',
+             "PORT": '5432',
              'OPTIONS': {
                  'options': '-c search_path=reopt_api'
              },
-             'USER': dev_user,
-             'PASSWORD': dev_user_password,
          }
 }
 
@@ -122,18 +147,18 @@ else:
 rollbar.init(**ROLLBAR)
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
 # Results backend
-CELERY_RESULT_BACKEND = 'django-db'
+CELERY_BROKER_URL = 'redis://redis:6379/0'
+CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
 
+CELERY_LOGGING_LEVEL = 'ERROR'
 # celery task registration
 CELERY_IMPORTS = (
     'reo.api',
