@@ -23,7 +23,8 @@ services:
       context: .
       dockerfile: Dockerfile
     image: base-api-image
-    command: celery -A reopt_api worker -l info
+    command: celery -A reopt_api worker --loglevel=info
+    # command: sh -c "celery -A reopt_api worker --loglevel=info"
     environment:
       - APP_ENV=local
       - DJANGO_SETTINGS_MODULE=reopt_api.dev_settings  # Ensure this matches your settings file
@@ -35,7 +36,6 @@ services:
     depends_on:
       - postgres
       - redis
-      - django
     networks:
       - my_network
     logging:
@@ -52,7 +52,15 @@ services:
       context: .
       dockerfile: Dockerfile
     image: base-api-image
-    command: /opt/reopt/bin/wait-for-it.bash postgres:5432 -t 0 -- python manage.py runserver 0.0.0.0:8000
+    # command: bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    #command: python manage.py runserver 0.0.0.0:8000
+    # command: bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000 > /opt/reopt/django.log 2>&1"
+    command: ["/bin/bash", "-c", "/opt/reopt/start_django.sh"]
+    volumes:
+      - ./start_django.sh:/opt/reopt/start_django.sh
+      - .:/opt/reopt
+    tty: true
+    stdin_open: true
     environment:
       - APP_ENV=local
       - SQL_HOST=postgres
@@ -60,8 +68,6 @@ services:
       - REDIS_HOST=redis
       - DATABASE_URL=postgres://reopt_api:reopt@postgres:5432/reopt
       - DJANGO_SETTINGS_MODULE=reopt_api.dev_settings
-    volumes:
-      - .:/opt/reopt
     depends_on:
       - postgres
       - redis
@@ -76,6 +82,8 @@ services:
         max-size: "10m"
         max-file: "3"
         labels: "django"
+    env_file:
+      - .env
 
   julia:
     container_name: julia_api

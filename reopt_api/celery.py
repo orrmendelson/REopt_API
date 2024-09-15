@@ -25,8 +25,8 @@ except KeyError:
     raw_env = 'reopt_api.dev_settings'
 
 #todo-orr: uncomment before deploy to Prod
-os.environ.setdefault('DJANGO_SETTINGS_MODULE','reopt_api.dev_settings')
-#os.environ.setdefault('DJANGO_SETTINGS_MODULE', raw_env)
+# os.environ.setdefault('DJANGO_SETTINGS_MODULE','reopt_api.dev_settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', raw_env)
 
 app = Celery('reopt_api')
 

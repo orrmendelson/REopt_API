@@ -4,6 +4,8 @@ import sys
 import os
 import django
 import rollbar
+# import dj_database_url
+
 """
 Django settings for reopt_api project.
 
@@ -104,6 +106,7 @@ ROLLBAR = {
 if 'test' in sys.argv or os.environ.get('APP_ENV') == 'local':
     ROLLBAR['enabled'] = False
     DATABASES = {
+        # 'default': dj_database_url.config(default=os.environ.get('DATABASE_URL'))
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': 'reopt',
@@ -115,6 +118,7 @@ if 'test' in sys.argv or os.environ.get('APP_ENV') == 'local':
                 'options': '-c search_path=public'
             },
         }
+    }
         # 'default': {
         #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
         #     'NAME': dev_database_name,
@@ -126,7 +130,7 @@ if 'test' in sys.argv or os.environ.get('APP_ENV') == 'local':
         #     "HOST": os.environ.get("SQL_HOST", "localhost"),
         #     "PORT": os.environ.get("SQL_PORT", "5432"),
         # }
-}
+
 else:
     DATABASES = {
          'default': {
@@ -134,7 +138,7 @@ else:
              'NAME': 'reopt_db',
              'USER': 'reopt_api',
              'PASSWORD': 'reopt',
-             "HOST": 'reopt_db',
+             "HOST": 'postgres',
              "PORT": '5432',
              'OPTIONS': {
                  'options': '-c search_path=reopt_api'
