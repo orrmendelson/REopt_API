@@ -1,12 +1,10 @@
-#!/bin/bash
-set -e
+   #!/bin/bash
+   set -e
 
-echo "Starting Django setup..."
-python --version
-pip list
-echo "Running migrations..."
-python manage.py migrate
-echo "Starting Django server..."
-python manage.py runserver 0.0.0.0:8000
-echo "Django server started, sleeping..."
-sleep infinity
+   echo "Starting Django setup..." >&2
+   python --version >&2
+   pip list >&2
+   echo "Running migrations..." >&2
+   python manage.py migrate >&2
+   echo "Starting Django server..." >&2
+   python manage.py runserver 0.0.0.0:8000

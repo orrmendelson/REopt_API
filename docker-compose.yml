@@ -55,7 +55,8 @@ services:
     # command: bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     #command: python manage.py runserver 0.0.0.0:8000
     # command: bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000 > /opt/reopt/django.log 2>&1"
-    command: ["/bin/bash", "-c", "/opt/reopt/start_django.sh"]
+    # command: ["/bin/bash", "-c", "/opt/reopt/start_django.sh"]
+    command: ["/bin/bash", "/opt/reopt/start_django.sh"]
     volumes:
       - ./start_django.sh:/opt/reopt/start_django.sh
       - .:/opt/reopt
@@ -77,11 +78,10 @@ services:
     networks:
       - my_network
     logging:
-      driver: "json-file"
+      driver: "local"
       options:
         max-size: "10m"
         max-file: "3"
-        labels: "django"
     env_file:
       - .env
 

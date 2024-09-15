@@ -35,6 +35,8 @@ stable_api.register(GHPGHXJob())
 dev_api = Api(api_name='dev')
 dev_api.register(FutureCostsAPI())
 
+def root_view(request):
+    return HttpResponse("Welcome to the REopt API")
 
 def page_not_found(request, url):
     """
@@ -48,6 +50,7 @@ def page_not_found(request, url):
 
 # Note the order of the URLs matters for avoiding invalid GET method for v1_api endpoints
 urlpatterns = [
+    path('', root_view, name='root'),
     re_path(r'^_health/?$', views.health, name='health'),
     
     path('v1/', include('reo.urls')),
