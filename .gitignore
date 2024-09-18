@@ -124,3 +124,4 @@ docker-compose.xpress.yml
 julia_src/solver_setup.sh
 django_startup.log
 django_startup.log
+django_startup.log

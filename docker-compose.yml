@@ -1,4 +1,33 @@
 services:
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: base-api-image
+    environment:
+      - APP_ENV=local
+      - DJANGO_SETTINGS_MODULE=reopt_api.dev_settings  # Ensure this matches your settings file
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - REDIS_HOST=redis
+    volumes:
+      - .:/opt/reopt
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - my_network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        labels: "web"
+    env_file:
+      - .env
+
+
   redis:
     image: redis:latest
     command: redis-server
@@ -23,7 +52,7 @@ services:
       context: .
       dockerfile: Dockerfile
     image: base-api-image
-    command: sh -c "chmod +x /opt/reopt/start_celery.sh && /opt/reopt/start_celery.sh"
+    # command: sh -c "chmod +x /opt/reopt/start_celery.sh && /opt/reopt/start_celery.sh"
     # command: ./start_celery.sh
     # command: celery -A reopt_api worker --loglevel=info
     # command: sh -c "celery -A reopt_api worker --loglevel=info"
