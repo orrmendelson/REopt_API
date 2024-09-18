@@ -42,8 +42,11 @@ COPY . /opt/reopt
 # Install python packages
 WORKDIR /opt/reopt
 COPY bin/wait-for-it.bash /opt/reopt/bin/
+COPY start_celery.sh /opt/reopt/start_celery.sh
+RUN chmod +x /opt/reopt/start_celery.sh
 
 RUN ["pip", "install", "-r", "requirements.txt"]
 
 EXPOSE 8000
+# ENTRYPOINT ["/opt/reopt/start_celery.sh"]
 # ENTRYPOINT ["python", "manage.py", "runserver", "0.0.0.0:8000"]

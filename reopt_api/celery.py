@@ -2,6 +2,7 @@ from __future__ import absolute_import, unicode_literals
 import os
 import logging
 from celery import Celery
+from celery import signals
 from celery.signals import after_setup_logger
 from keys import *
 
