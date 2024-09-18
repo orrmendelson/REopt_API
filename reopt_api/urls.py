@@ -7,6 +7,7 @@ from resilience_stats.api import OutageSimJob
 from resilience_stats.api import ERPJob
 from tastypie.api import Api
 from reo import views
+from django.contrib import admin
 from reoptjl.api import Job as REoptJLJob
 from futurecosts.api import FutureCostsAPI
 from ghpghx.resources import GHPGHXJob
@@ -50,6 +51,8 @@ def page_not_found(request, url):
 
 # Note the order of the URLs matters for avoiding invalid GET method for v1_api endpoints
 urlpatterns = [
+    path('admin/', admin.site.urls),
+
     path('', root_view, name='root'),
     re_path(r'^_health/?$', views.health, name='health'),
     
