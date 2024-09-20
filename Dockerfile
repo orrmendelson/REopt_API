@@ -49,6 +49,12 @@ RUN chmod +x /opt/reopt/start_system.sh
 COPY requirements.txt /opt/reopt/
 RUN ["pip", "install", "-r", "requirements.txt"]
 
+# RUN python manage.py migrate && \
+#     python manage.py collectstatic --noinput && \
+#     python manage.py createsuperuser --noinput || true
+
+RUN python manage.py createsuperuser --noinput || true
+
 EXPOSE 8000
 
 ENTRYPOINT ["/opt/reopt/start_system.sh"]

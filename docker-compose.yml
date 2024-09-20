@@ -7,12 +7,14 @@ services:
     image: base-api-image
     environment:
       - APP_ENV=local
-      - DJANGO_SETTINGS_MODULE=reopt_api.dev_settings  # Ensure this matches your settings file
+      - DJANGO_SETTINGS_MODULE=reopt_api.dev_settings  
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
       - REDIS_HOST=redis
     volumes:
       - .:/opt/reopt
+      - static_volume:/opt/reopt/static 
+      - media_volume:/opt/reopt/media
     depends_on:
       redis:
         condition: service_healthy
@@ -29,6 +31,17 @@ services:
     env_file:
       - .env
 
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - static_volume:/opt/reopt/static
+    depends_on:
+      - web
+    networks:
+      - my_network
 
   redis:
     image: redis:latest
@@ -139,3 +152,8 @@ services:
 
 networks:
   my_network:
+
+volumes:
+  static_volume: 
+  media_volume: 
+

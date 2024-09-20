@@ -1,4 +1,6 @@
 # REopt®, Copyright (c) Alliance for Sustainable Energy, LLC. See also https://github.com/NREL/REopt_API/blob/master/LICENSE.
+from django.conf.urls.static import static
+from django.conf import settings
 from django.urls import include, re_path, path
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.http import HttpResponse
@@ -95,3 +97,7 @@ urlpatterns = [
     ]
 
 urlpatterns += staticfiles_urlpatterns()
+# Always serve static files
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

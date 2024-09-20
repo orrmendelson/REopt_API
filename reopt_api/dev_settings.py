@@ -186,6 +186,9 @@ CELERY_WORKER_MAX_MEMORY_PER_CHILD = 4000000 # 4 GB
 # Static files (used for Proforma xlsx)
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
+# STATIC_ROOT = '/opt/reopt/static/'  # Ensure this path matches the static files directory
+MEDIA_URL = '/media/'
+MEDIA_ROOT = '/opt/reopt/media/'  # Ensure this path matches the media files directory
 
 APPEND_SLASH = False
 TASTYPIE_ALLOW_MISSING_SLASH = True
