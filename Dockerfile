@@ -55,7 +55,7 @@ RUN ["pip", "install", "-r", "requirements.txt"]
 
 RUN python manage.py createsuperuser --noinput || true
 
-EXPOSE 8000
+EXPOSE 8050
 
 ENTRYPOINT ["/opt/reopt/start_system.sh"]
 # ENTRYPOINT ["/opt/reopt/start_celery_django.sh"]

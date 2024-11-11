@@ -123,7 +123,7 @@ services:
       - redis
       - julia
     ports:
-      - 8000:8000
+      - 8050:8050
     networks:
       - my_network
     logging:

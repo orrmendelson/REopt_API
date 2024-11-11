@@ -133,11 +133,20 @@ INFO:django.utils.autoreload:Watching for file changes with StatReloader
 Performing system checks...
 
 System check identified no issues (0 silenced).
-September 18, 2024 - 16:27:43
+September 18, 2024 - 18:46:30
 Django version 4.0.7, using settings 'reopt_api.dev_settings'
 Starting development server at http://0.0.0.0:8000/
 Quit the server with CONTROL-C.
-[18/Sep/2024 16:27:54] "GET / HTTP/1.1" 200 24
+[18/Sep/2024 18:46:36] "GET / HTTP/1.1" 200 24
 WARNING:django.request:Not Found: /favicon.ico
-[18/Sep/2024 16:27:54] "GET /favicon.ico HTTP/1.1" 404 24
-[18/Sep/2024 16:28:03] "GET / HTTP/1.1" 200 24
+[18/Sep/2024 18:46:36] "GET /favicon.ico HTTP/1.1" 404 24
+WARNING:django.request:Not Found: /job/
+[18/Sep/2024 18:52:07] "GET /job/ HTTP/1.1" 404 17
+WARNING:django.request:Not Found: /hrlp/
+[18/Sep/2024 18:53:05] "GET /hrlp/ HTTP/1.1" 404 18
+WARNING:django.request:Not Found: /help/
+[18/Sep/2024 18:53:13] "GET /help/ HTTP/1.1" 404 18
+WARNING:django.request:Not Found: /job/dfgdfgdfg-dfgdfgdfg-dfgdfg-dfg/results/
+[18/Sep/2024 18:54:01] "GET /job/dfgdfgdfg-dfgdfgdfg-dfgdfg-dfg/results/ HTTP/1.1" 404 56
+WARNING:django.request:Not Found: /admin/
+[18/Sep/2024 18:55:02] "GET /admin/ HTTP/1.1" 404 19
