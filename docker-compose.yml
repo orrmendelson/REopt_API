@@ -66,8 +66,8 @@ services:
       POSTGRES_DB: reopt
       POSTGRES_USER: reopt_api
       POSTGRES_PASSWORD: reopt
-    expose:
-      - 5432
+    ports:
+      - 5433:5432
 
   celery:
     build:
