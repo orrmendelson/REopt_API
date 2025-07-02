@@ -31,6 +31,7 @@ RUN apt-get update && apt-get install -y \
     git \
     curl \
     vim \
+    dos2unix \
     && rm -rf /var/lib/apt/lists/*
 
 
@@ -39,12 +40,17 @@ ENV PYTHONDONTWRITEBYTECODE=1
 
 COPY . /opt/reopt
 
+# Create keys.py from template
+RUN cp /opt/reopt/keys.py.template /opt/reopt/keys.py
+
 # Install python packages
 WORKDIR /opt/reopt
 
 COPY bin/wait-for-it.bash /opt/reopt/bin/
 COPY start_system.sh /opt/reopt/start_system.sh
-RUN chmod +x /opt/reopt/start_system.sh
+RUN dos2unix /opt/reopt/start_system.sh && chmod +x /opt/reopt/start_system.sh && \
+    ls -la /opt/reopt/start_system.sh && \
+    file /opt/reopt/start_system.sh
 
 COPY requirements.txt /opt/reopt/
 RUN ["pip", "install", "-r", "requirements.txt"]
@@ -57,6 +63,15 @@ RUN python manage.py createsuperuser --noinput || true
 
 EXPOSE 8050
 
-ENTRYPOINT ["/opt/reopt/start_system.sh"]
+ENTRYPOINT ["/bin/bash", "/opt/reopt/start_system.sh"]
 # ENTRYPOINT ["/opt/reopt/start_celery_django.sh"]
 # ENTRYPOINT ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+
+RUN echo '#!/bin/bash' > /opt/reopt/start_system.sh && \
+    echo 'echo "Applying database migrations..."' >> /opt/reopt/start_system.sh && \
+    echo 'python manage.py migrate' >> /opt/reopt/start_system.sh && \
+    echo 'echo "Starting Django server..."' >> /opt/reopt/start_system.sh && \
+    echo 'python manage.py runserver 0.0.0.0:8050 &' >> /opt/reopt/start_system.sh && \
+    echo 'echo "Starting Celery worker..."' >> /opt/reopt/start_system.sh && \
+    echo 'exec celery -A reopt_api worker --loglevel=info' >> /opt/reopt/start_system.sh && \
+    chmod +x /opt/reopt/start_system.sh
