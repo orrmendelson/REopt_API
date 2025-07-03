@@ -73,6 +73,13 @@ class Job(ModelResource):
 
     def obj_create(self, bundle, **kwargs):
         run_uuid = str(uuid.uuid4())
+        
+        # DEBUG: Log the incoming request data
+        log.info("=== INCOMING REQUEST DATA ===")
+        log.info(f"Request data keys: {list(bundle.data.keys())}")
+        log.info(f"Full request data: {json.dumps(bundle.data, indent=2, default=str)}")
+        log.info("=== END INCOMING REQUEST DATA ===")
+        
         # Attempt to get POSTed api_key assigned to APIMeta.api_key (or try method below for user_uuid)
         api_key = keys.developer_nrel_gov_key #bundle.request.GET.get("api_key", "")
         if 'user_uuid' in bundle.data.keys():
